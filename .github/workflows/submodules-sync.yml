@@ -1,3 +1,5 @@
+# https://stackoverflow.com/a/67059629/9535028
+
 name: Submodules Sync
 
 # Controls when the workflow will run
@@ -34,7 +36,7 @@ jobs:
 
             -   name: Commit update
                 run: |
-                    git config user.email "actions@github.com"
-                    git config user.name "GitHub Actions - update submodules"
+                    git config --global user.name 'Git Bot - Update submodules'
+                    git config --global user.email 'bot@noreply.github.com'
                     git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-                    git commit -am "Auto updated submodule references" && git push || echo "No changes to commit"
+                    git commit -am ":label: Auto update submodule references" && git push || echo "No changes to commit"
