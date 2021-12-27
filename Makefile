@@ -1,58 +1,81 @@
+# https://www.strangebuzz.com/fr/snippets/le-makefile-parfait-pour-symfony
+
 # Misc
 .ONESHELL:
 .DEFAULT_GOAL = help
-.PHONY = help init composer-install yarn create-git-alias submodule-init
+#.PHONY =
+
+# Parameters
+BACK_PORT = 8000
+FRONT_PORT = 3000
 
 # Executables
-EXEC_PHP = php
+PHP = php
+COMPOSER = composer
+YARN = yarn
+DOCKER = docker
+DOCKER_COMPOSE = docker-compose
 
 # Alias
-SYMFONY = $(EXEC_PHP) bin/console
-YARN = yarn
-
-# Executables: local only
-SYMFONY_BIN = symfony
-
-## ————————————————————————————— MOST USED ————————————————————————————
+SYMFONY = $(PHP) bin/console
 
 help: ## Outputs this help screen
-	@grep -E '(^[a-zA-Z0-9_-]+:.*?##.*$$)|(^##)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}{printf "\033[32m%-10s\033[0m %s\n\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'
-
-init: create-git-alias submodule-init composer-install yarn ## To run after clone project
+	@grep -E '(^[a-zA-Z0-9_-]+:.*?##.*$$)|(^##)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}{printf "\033[32m%-18s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m\n/'
 
 ## ——————————————————————————————— BACK ———————————————————————————————
 
 ## —— Composer 🧙️ —————————————————————————————————————————————————————
 
-composer-install: back/vendor ## Install vendors according to the current composer.lock file
-
-back/composer.lock: back/composer.json
-	@cd back && $(SYMFONY_BIN) composer update --no-progress --prefer-dist --optimize-autoloader
-
-back/vendor: back/composer.lock
-	@cd back && $(SYMFONY_BIN) composer install --no-progress --prefer-dist --optimize-autoloader
+install: back/composer.lock ## Install vendors according to the current composer.lock file
+	@cd back && $(COMPOSER) install --no-progress --prefer-dist --optimize-autoloader
 
 ## ——————————————————————————————— FRONT ——————————————————————————————
 
 
 ## —— Vite ⚡ —————————————————————————————————————————————————————————
 
-yarn: front/node_modules ## Install node modules according to the current yarn.lock file
-
-front/yarn.lock: front/package.json
-	@cd front && $(YARN)
-
-front/node_modules: front/yarn.lock
+yarn: front/yarn.lock ## Install node modules according to the current yarn.lock file
 	@cd front && $(YARN)
 
 ## ——————————————————————————————— OTHER ——————————————————————————————
 
-create-git-alias:
+## —— Docker 🐳 ———————————————————————————————————————————————————————
+
+up: ## Start the docker hub
+	$(DOCKER_COMPOSE) up --detach
+
+build: ## Builds the images
+	$(DOCKER_COMPOSE) build --pull --no-cache
+
+down: ## Stop the docker hub
+	$(DOCKER_COMPOSE) down --remove-orphans
+
+sh: ## Log to the docker container
+	@$(DOCKER_COMPOSE) exec php sh
+
+logs: ## Show live logs
+	@$(DOCKER_COMPOSE) logs --tail=0 --follow
+
+## —— Project 🐝 ——————————————————————————————————————————————————————
+
+init: create-git-alias submodule-init install yarn build ## Initialize project, need to run after git clone
+
+start: up open-back ## Start Docker
+
+stop: down ## Stop Docker
+
+open-back: ## Open link into browser
+	@sleep 3
+	@xdg-open 'https://localhost'
+
+## —— GIT 🚀 ——————————————————————————————————————————————————————————
+
+create-git-alias: ## Create git alias about submodules
 	@git config alias.sdiff '!'"git diff && git submodule foreach 'git diff'"
 	@git config alias.spush 'push --recurse-submodules=on-demand'
 	@git config alias.supdate 'submodule update --remote --merge'
 
-submodule-init:
+submodule-init: ## Clone submodules if not already done
 	@if find back -prune -empty | grep -q .
 	then
 		@if find front -prune -empty | grep -q .
