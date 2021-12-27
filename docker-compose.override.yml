@@ -1,0 +1,20 @@
+version: "3.8"
+
+# Development environment override
+services:
+  php:
+    volumes:
+      # The "cached" option has no effect on Linux but improves performance on Mac
+      - ./back:/srv/app:rw,cached
+      - ./back/docker/php/conf.d/symfony.dev.ini:/usr/local/etc/php/conf.d/symfony.ini
+    environment:
+      APP_ENV: dev
+
+  caddy:
+    volumes:
+      - ./back/docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./back/public:/srv/app/public:ro
+
+  database:
+    ports:
+      - "5432"

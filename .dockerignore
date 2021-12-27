@@ -1,0 +1,40 @@
+## —————————————————————————————— PROJECT ——————————————————————————————
+
+**/*.log
+**/*.md
+**/*.php~
+**/._*
+
+**/.DS_Store
+**/.idea
+
+**/.git/
+**/.gitattributes
+**/.gitignore
+**/.gitmodules
+
+**/Thumbs.db
+
+.editorconfig
+
+.env.*.local
+.env.local
+.env.local.php
+
+## —————————————————————————————— DOCKER ——————————————————————————————
+
+back/docker/db/data/
+**/docker-compose.*.yaml
+**/docker-compose.*.yml
+**/docker-compose.yaml
+**/docker-compose.yml
+back/Dockerfile
+**/.dockerignore
+
+## ——————————————————————————————— BACK ———————————————————————————————
+
+back/bin/*
+!back/bin/console
+back/public/bundles/
+back/var/
+back/vendor/
