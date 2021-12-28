@@ -10,11 +10,28 @@ services:
     environment:
       APP_ENV: dev
 
-  caddy:
+  caddy_back:
     volumes:
       - ./back/docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./back/public:/srv/app/public:ro
 
   database:
+    volumes:
+      - ./back/docker/db/data:/var/lib/postgresql/data:rw
     ports:
-      - "5432"
+      - "5432:5432"
+      
+  vite:
+    volumes:
+      # The "cached" option has no effect on Linux but improves performance on Mac
+      - ./front:/srv/app:rw,cached
+        
+  caddy_front:
+    volumes:
+      - ./front/docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+
+  mailer:
+    image: schickling/mailcatcher
+    ports:
+      - "1025"
+      - "1080:1080"

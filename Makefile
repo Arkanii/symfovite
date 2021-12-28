@@ -16,6 +16,9 @@ YARN = yarn
 DOCKER = docker
 DOCKER_COMPOSE = docker-compose
 
+USER_ID = $(shell id -u)
+GROUP_ID = $(shell id -g)
+
 # Alias
 SYMFONY = $(PHP) bin/console
 
@@ -44,6 +47,9 @@ yarn: front/yarn.lock ## Install node modules according to the current yarn.lock
 up: ## Start the docker hub
 	$(DOCKER_COMPOSE) up --detach
 
+up-no-detach: ## Start the docker hub
+	$(DOCKER_COMPOSE) up
+
 build: ## Builds the images
 	$(DOCKER_COMPOSE) build --pull --no-cache
 
@@ -56,15 +62,20 @@ sh: ## Log to the docker container
 logs: ## Show live logs
 	@$(DOCKER_COMPOSE) logs --tail=0 --follow
 
+#chown:
+#	@$(DOCKER_COMPOSE) run --rm database chown -R $(USER_ID):$(GROUP_ID) /var/lib/postgresql/data
+#	@$(DOCKER_COMPOSE) run --rm php chown -R $(USER_ID):$(GROUP_ID) .
+#	@$(DOCKER_COMPOSE) run --rm vite chown -R $(USER_ID):$(GROUP_ID) .
+
 ## —— Project 🐝 ——————————————————————————————————————————————————————
 
 init: create-git-alias submodule-init install yarn build ## Initialize project, need to run after git clone
 
-start: up open-back ## Start Docker
+start: up open-browser ## Start Docker
 
 stop: down ## Stop Docker
 
-open-back: ## Open link into browser
+open-browser: ## Open link into browser
 	@sleep 3
 	@xdg-open 'https://localhost'
 

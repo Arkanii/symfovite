@@ -28,7 +28,7 @@ back/docker/db/data/
 **/docker-compose.*.yml
 **/docker-compose.yaml
 **/docker-compose.yml
-back/Dockerfile
+**/Dockerfile
 **/.dockerignore
 
 ## ——————————————————————————————— BACK ———————————————————————————————
@@ -38,3 +38,8 @@ back/bin/*
 back/public/bundles/
 back/var/
 back/vendor/
+
+## ——————————————————————————————— FRONT ———————————————————————————————
+
+front/node_modules
+front/build
