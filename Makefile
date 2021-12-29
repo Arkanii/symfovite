@@ -51,10 +51,10 @@ up-no-detach: ## Start the docker hub
 	$(DOCKER_COMPOSE) up
 
 build: ## Builds the images
-	$(DOCKER_COMPOSE) build --pull --no-cache
+	@$(DOCKER_COMPOSE) build --pull --no-cache
 
 down: ## Stop the docker hub
-	$(DOCKER_COMPOSE) down --remove-orphans
+	@$(DOCKER_COMPOSE) down --remove-orphans
 
 sh: ## Log to the docker container
 	@$(DOCKER_COMPOSE) exec php sh
@@ -97,4 +97,4 @@ submodule-init: ## Clone submodules if not already done
 
 checkout-master:
 	@cd back && git checkout master
-	@cd front && git checkout master
+	@cd ../front && git checkout master
