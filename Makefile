@@ -69,7 +69,7 @@ logs: ## Show live logs
 
 ## —— Project 🐝 ——————————————————————————————————————————————————————
 
-init: create-git-alias submodule-init install yarn build ## Initialize project, need to run after git clone
+init: create-git-alias submodule-init checkout-master install yarn build ## Initialize project, need to run after git clone
 
 start: up open-browser ## Start Docker
 
@@ -94,3 +94,7 @@ submodule-init: ## Clone submodules if not already done
 			@git submodule update --init
 		fi
 	fi
+
+checkout-master:
+	@cd back && git checkout master
+	@cd front && git checkout master
