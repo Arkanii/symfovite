@@ -17,15 +17,15 @@ services:
 
   database:
     volumes:
-      - ./back/docker/db/data:/var/lib/postgresql/data:rw
+      - db-data:/var/lib/postgresql/data:rw
     ports:
       - "5432:5432"
-      
+  
   vite:
     volumes:
       # The "cached" option has no effect on Linux but improves performance on Mac
       - ./front:/srv/app:rw,cached
-        
+  
   caddy_front:
     volumes:
       - ./front/docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
@@ -35,3 +35,6 @@ services:
     ports:
       - "1025"
       - "1080:1080"
+
+volumes:
+  db-data:

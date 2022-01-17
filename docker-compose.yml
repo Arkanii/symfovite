@@ -61,7 +61,7 @@ services:
     restart: unless-stopped
     depends_on:
       - caddy_back
-        
+  
   caddy_front:
     build:
       context: front
