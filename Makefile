@@ -1,25 +1,18 @@
 # https://www.strangebuzz.com/fr/snippets/le-makefile-parfait-pour-symfony
 
+# Parameters
+BACK_PORT = 55995
+FRONT_PORT = 443
+
+# Executables
+YARN = yarn
+DOCKER_COMPOSE = docker-compose
+SYMFONY_BIN = symfony
+
 # Misc
 .ONESHELL:
 .DEFAULT_GOAL = help
 #.PHONY =
-
-# Parameters
-BACK_PORT = 55995
-FRONT_PORT = 443
-MAILCATCHER_PORT = 1080
-
-# Executables
-PHP = php
-COMPOSER = composer
-YARN = yarn
-DOCKER = docker
-DOCKER_COMPOSE = docker-compose
-SYMFONY_BIN = symfony
-
-USER_ID = $(shell id -u)
-GROUP_ID = $(shell id -g)
 
 help: ## Outputs this help screen
 	@grep -E '(^[a-zA-Z0-9_-]+:.*?##.*$$)|(^##)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}{printf "\033[32m%-25s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m\n/'
@@ -30,7 +23,7 @@ help: ## Outputs this help screen
 
 install: back/composer.lock  ## Install vendors according to the current composer.lock file
 	@cd back
-	@$(COMPOSER) install --no-progress --prefer-dist --optimize-autoloader
+	@$(SYMFONY_BIN) composer install --no-progress --prefer-dist --optimize-autoloader
 
 ## —— Symfony 🎵️ ——————————————————————————————————————————————————————
 
@@ -58,7 +51,7 @@ consume: ## Consume all messages (require symfony/messenger)
 	@cd back
 	@$(SYMFONY_BIN) console messenger:consume -vv
 
-open-rabbitmq-admin: ## Open RabbitMQ admin website (require rabbitmq in docker-compose)
+rabbitmq: ## Open RabbitMQ admin website (require rabbitmq in docker-compose)
 	@cd back
 	@$(SYMFONY_BIN) open:local:rabbitmq
 
@@ -69,6 +62,8 @@ mailcatcher: ## Open MailCatcher website (require schickling/mailcatcher in dock
 	@$(SYMFONY_BIN) open:local:webmail
 
 ## ——————————————————————————————— FRONT ——————————————————————————————
+
+## —— React ⚛ —————————————————————————————————————————————————————————
 
 ## —— Vite ⚡ —————————————————————————————————————————————————————————
 
@@ -92,7 +87,7 @@ build: ## Builds the images
 down: ## Stop the docker hub
 	@$(DOCKER_COMPOSE) down --remove-orphans
 
-sh: ## Log to the docker container
+back-sh: ## Connect to the PHP FPM container
 	@$(DOCKER_COMPOSE) exec php sh
 
 logs: ## Show live logs
@@ -116,17 +111,14 @@ open-react: ## Open the React app into browser
 open-api: ## Open API Platform into browser
 	@xdg-open 'https://localhost:$(BACK_PORT)/api/docs'
 
-open-mailcatcher: ## Open Mailcatcher into browser
-	@xdg-open 'http://localhost:$(MAILCATCHER_PORT)'
-
-open-all: open-api open-react open-mailcatcher ## Open all links into browser
+open-all: open-api open-react ## Open all links into browser
 
 ## —— GIT 🚀 ——————————————————————————————————————————————————————————
 
 create-git-alias: ## Create git alias about submodules
 	@git config alias.sdiff '!'"git diff && git submodule foreach 'git diff'"
 	@git config alias.spush 'push --recurse-submodules=on-demand'
-	@git config alias.supdate 'submodule update --remote --merge'
+	@git config alias.spull 'submodule update --remote --merge'
 
 submodule-init: ## Clone submodules if not already done
 	@if find back -prune -empty | grep -q .
@@ -147,7 +139,7 @@ checkout-master-front:
 	@cd front
 	@git checkout master
 
-## —— Other 🤷‍ ————————————————————————————————————————————————————————
+## —— Misc 🤷‍ ————————————————————————————————————————————————————————
 
 sleep:
 	@sleep 3
