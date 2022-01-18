@@ -5,6 +5,8 @@ services:
     build:
       context: back
       target: symfony_php
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.1}
     restart: unless-stopped
     volumes:
       - php_socket:/var/run/php
@@ -24,6 +26,8 @@ services:
     build:
       context: back
       target: symfony_caddy
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.1}
     depends_on:
       - php
     environment:
