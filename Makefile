@@ -1,8 +1,6 @@
 # https://www.strangebuzz.com/fr/snippets/le-makefile-parfait-pour-symfony
 
-# Parameters
-BACK_PORT = 55995
-FRONT_PORT = 443
+include .env
 
 # Executables
 YARN = yarn
@@ -106,10 +104,10 @@ start: up sleep open-all ## Start Docker
 stop: down ## Stop Docker
 
 open-react: ## Open the React app into browser
-	@xdg-open 'https://localhost:$(FRONT_PORT)'
+	@xdg-open 'https://localhost:$(VITE_HTTPS_PORT)'
 
 open-api: ## Open API Platform into browser
-	@xdg-open 'https://localhost:$(BACK_PORT)/api/docs'
+	@xdg-open 'https://localhost:$(API_HTTPS_PORT)/api/docs'
 
 open-all: open-api open-react ## Open all links into browser
 

@@ -36,15 +36,15 @@ services:
     ports:
       # HTTP
       - target: 80
-        published: 55999
+        published: ${API_HTTP_PORT}
         protocol: tcp
       # HTTPS
       - target: 443
-        published: 55995
+        published: ${API_HTTPS_PORT}
         protocol: tcp
       # HTTP/3
       - target: 443
-        published: 55995
+        published: ${API_HTTPS_PORT}
         protocol: udp
 
   database:
@@ -77,15 +77,15 @@ services:
     ports:
       # HTTP
       - target: 80
-        published: 80
+        published: ${VITE_HTTP_PORT}
         protocol: tcp
       # HTTPS
       - target: 443
-        published: 443
+        published: ${VITE_HTTPS_PORT}
         protocol: tcp
       # HTTP/3
       - target: 443
-        published: 443
+        published: ${VITE_HTTPS_PORT}
         protocol: udp
 
 volumes:
